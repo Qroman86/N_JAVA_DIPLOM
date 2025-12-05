@@ -1,53 +1,47 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.5'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group = 'ru.netology'
-version = '0.0.1-SNAPSHOT'
-description = 'Cloud Storage Diploma Netology'
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
+group = 'ru.netolgoy'
+version = '1.0-SNAPSHOT'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // === Основные ===
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	runtimeOnly 'org.postgresql:postgresql'
+    // База данных PostgreSQL
+    runtimeOnly 'org.postgresql:postgresql'
 
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    // === Тесты ===
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 
-	testImplementation 'org.testcontainers:postgresql:1.20.2'
-	testImplementation 'org.testcontainers:junit-jupiter:1.20.2'
+    // Testcontainers: PostgreSQL + JUnit 5
+    testImplementation 'org.testcontainers:postgresql:1.20.2'
+    testImplementation 'org.testcontainers:junit-jupiter:1.20.2'
 
-	testImplementation 'org.mockito:mockito-core:5.14.2'
-	testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
+    // Mockito (явно, чтобы не было конфликтов версий)
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
 
-	testImplementation 'org.assertj:assertj-core:3.26.3'
+    // Для удобства в тестах (опционально, но полезно)
+    testImplementation 'org.assertj:assertj-core:3.26.3'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+test {
+    useJUnitPlatform()
 }
