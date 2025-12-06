@@ -1,0 +1,74 @@
+package ru.netology.cloudstorage.service;
+
+import ru.netology.cloudstorage.dto.FileListResponse;
+import ru.netology.cloudstorage.entity.CloudFile;
+import ru.netology.cloudstorage.repository.CloudFileRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class FileService {
+
+    private CloudFileRepository fileRepository;
+
+    @Value("${app.storage-path:./uploads}")
+    private String storagePath;
+
+    public void uploadFile(String login, String filename, MultipartFile file) throws IOException {
+        Path path = Paths.get(storagePath, login, filename);
+        Files.createDirectories(path.getParent());
+        Files.write(path, file.getBytes());
+
+        CloudFile cloudFile = new CloudFile();
+        cloudFile.setFilename(filename);
+        cloudFile.setOriginalName(file.getOriginalFilename());
+        cloudFile.setSize(file.getSize());
+        cloudFile.setContentType(file.getContentType());
+        cloudFile.setOwnerLogin(login);
+        fileRepository.save(cloudFile);
+    }
+
+    public Resource downloadFile(String login, String filename) throws IOException {
+        Path path = Paths.get(storagePath, login, filename);
+        return new ByteArrayResource(Files.readAllBytes(path));
+    }
+
+    public List<FileListResponse> getFileList(String login, int limit) {
+        return fileRepository.findByOwnerLogin(login).stream()
+                .limit(limit)
+                .map(f -> new FileListResponse(f.getFilename(), f.getSize()))
+                .toList();
+    }
+
+    public void deleteFile(String login, String filename) {
+        fileRepository.deleteByOwnerLoginAndFilename(login, filename);
+        try {
+            Files.deleteIfExists(Paths.get(storagePath, login, filename));
+        } catch (IOException ignored) {}
+    }
+
+    public void renameFile(String login, String oldName, String newName) {
+        CloudFile file = fileRepository.findByOwnerLoginAndFilename(login, oldName)
+                .orElseThrow(() -> new RuntimeException("File not found"));
+        file.setFilename(newName);
+        file.setOriginalName(newName);
+        fileRepository.save(file);
+
+        try {
+            Path oldPath = Paths.get(storagePath, login, oldName);
+            Path newPath = Paths.get(storagePath, login, newName);
+            Files.move(oldPath, newPath);
+        } catch (IOException ignored) {}
+    }
+}
