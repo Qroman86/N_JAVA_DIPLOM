@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  cloud-app:
+    build: .
+    container_name: cloud-storage-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/cloud_db
+      - SPRING_DATASOURCE_USERNAME=cloud
+      - SPRING_DATASOURCE_PASSWORD=cloud
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+    volumes:
+      - ./uploads:/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    container_name: cloud-storage-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cloud_db
+      POSTGRES_USER: cloud
+      POSTGRES_PASSWORD: cloud
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloud -d cloud_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  uploads:

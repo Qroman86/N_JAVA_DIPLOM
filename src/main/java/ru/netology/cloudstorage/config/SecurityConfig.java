@@ -8,13 +8,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ru.netology.cloudstorage.service.AuthService;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private TokenAuthFilter tokenAuthFilter;
+    private final TokenAuthFilter tokenAuthFilter;
+
+    public SecurityConfig(TokenAuthFilter tokenAuthFilter){
+        this.tokenAuthFilter = tokenAuthFilter;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

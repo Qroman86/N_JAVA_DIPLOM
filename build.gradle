@@ -12,36 +12,29 @@ repositories {
 }
 
 dependencies {
-    // === Основные ===
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // База данных PostgreSQL
-    runtimeOnly 'org.postgresql:postgresql'
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // === Тесты ===
+    runtimeOnly 'org.postgresql:postgresql'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-
-    // Testcontainers: PostgreSQL + JUnit 5
+    testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql:1.20.2'
-    testImplementation 'org.testcontainers:junit-jupiter:1.20.2'
 
-    // Mockito (явно, чтобы не было конфликтов версий)
     testImplementation 'org.mockito:mockito-core:5.14.2'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
 
-    // Для удобства в тестах (опционально, но полезно)
     testImplementation 'org.assertj:assertj-core:3.26.3'
+
 }
 
 test {
     useJUnitPlatform()
+    systemProperty "spring.profiles.active", "test"
 }

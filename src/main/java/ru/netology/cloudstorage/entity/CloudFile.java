@@ -1,17 +1,32 @@
 package ru.netology.cloudstorage.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import ru.netology.cloudstorage.entity.User;
 
 @Entity
 @Table(name = "cloud_files")
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 public class CloudFile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String filename;
+    private String originalName;
+
+    public String getOwnerLogin() {
+        return ownerLogin;
+    }
+
+    public void setOwnerLogin(String ownerLogin) {
+        this.ownerLogin = ownerLogin;
+    }
+
+    private String ownerLogin;
 
     public Long getId() {
         return id;
@@ -53,20 +68,18 @@ public class CloudFile {
         this.contentType = contentType;
     }
 
-    public String getOwnerLogin() {
-        return ownerLogin;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setOwnerLogin(String ownerLogin) {
-        this.ownerLogin = ownerLogin;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
-    private String filename;        // имя, под которым хранится на диске
-    private String originalName;    // оригинальное имя от клиента
     private long size;
     private String contentType;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_login")
-    private String ownerLogin;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 }

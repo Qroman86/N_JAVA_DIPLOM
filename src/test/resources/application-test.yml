@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:15-alpine:///cloud_db_test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver  # ← ИЗМЕНИТЬ!
+    username: test
+    password: test
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    org.springframework: WARN
+    ru.netology: DEBUG
