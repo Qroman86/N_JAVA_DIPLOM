@@ -35,10 +35,25 @@ dependencies {
 }
 
 tasks.register('copySqlScript', Copy) {
-    from 'src/main/resources'
-    into "${buildDir}/docker/sql"
-    include '01-schema.sql', '02-data.sql'
+    from('src/main/resources') {
+        include '01-schema.sql', '02-data.sql'
+    }
+    into(layout.buildDirectory.dir('docker/sql'))
+    eachFile { fileCopyDetails ->
+        if (fileCopyDetails.file.isDirectory()) {
+            throw new GradleException("Unexpected directory: ${fileCopyDetails.path}")
+        }
+    }
+    doLast {
+        println "SQL-scripts are copied to: ${destinationDir}"
+        def copiedFiles = destinationDir.listFiles()?.collect { it.name }
+        println "Copied files: ${copiedFiles}"
+        if (copiedFiles == null || copiedFiles.isEmpty()) {
+            logger.warn("Source SQL-files are not found!")
+        }
+    }
 }
+
 
 test {
     useJUnitPlatform()
