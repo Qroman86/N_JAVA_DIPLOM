@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,13 +29,17 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
         String token = request.getHeader("auth-token");
 
-        if (token != null && authService.getLoginByToken(token) != null) {
-            var auth = new UsernamePasswordAuthenticationToken(
-                    authService.getLoginByToken(token),
-                    null,
-                    Collections.emptyList()
-            );
-            SecurityContextHolder.getContext().setAuthentication(auth); // Правильно!
+        if (token != null && authService.validateToken(token)) {
+            String login = authService.getLoginByToken(token);
+
+            if (login != null) {
+                var auth = new UsernamePasswordAuthenticationToken(
+                        login,
+                        null, // пароль не нужен — аутентификация по токену
+                        Collections.emptyList()
+                );
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
         }
 
         filterChain.doFilter(request, response);

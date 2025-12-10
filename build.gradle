@@ -34,6 +34,12 @@ dependencies {
 
 }
 
+tasks.register('copySqlScript', Copy) {
+    from 'src/main/resources'
+    into "${buildDir}/docker/sql"
+    include '01-schema.sql', '02-data.sql'
+}
+
 test {
     useJUnitPlatform()
     systemProperty "spring.profiles.active", "test"

@@ -5,7 +5,6 @@ import ru.netology.cloudstorage.entity.CloudFile;
 import ru.netology.cloudstorage.service.AuthService;
 import ru.netology.cloudstorage.service.FileService;
 import ru.netology.cloudstorage.repository.CloudFileRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +16,18 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/cloud")
-@RequiredArgsConstructor
 public class FileController {
 
-    private FileService fileService;
-    private AuthService authService;
+    private final FileService fileService;
+    private final AuthService authService;
 
-    private CloudFileRepository fileRepository;
+    private final CloudFileRepository fileRepository;
+
+    public FileController(FileService fileService, AuthService authService, CloudFileRepository fileRepository) {
+        this.fileService = fileService;
+        this.authService = authService;
+        this.fileRepository = fileRepository;
+    }
 
     @PostMapping("/file")
     public ResponseEntity<Void> upload(

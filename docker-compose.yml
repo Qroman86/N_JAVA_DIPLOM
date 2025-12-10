@@ -7,12 +7,14 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
+      - "5005:5005"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/cloud_db
       - SPRING_DATASOURCE_USERNAME=cloud
       - SPRING_DATASOURCE_PASSWORD=cloud
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     volumes:
       - ./uploads:/uploads
     depends_on:
@@ -30,7 +32,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./build/docker/sql/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./build/docker/sql/02-data.sql:/docker-entrypoint-initdb.d/02-data.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cloud -d cloud_db"]
       interval: 5s

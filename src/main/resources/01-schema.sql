@@ -14,3 +14,6 @@ CREATE TABLE IF NOT EXISTS cloud_files (
     CONSTRAINT fk_owner FOREIGN KEY (owner_login) REFERENCES users(login) ON DELETE CASCADE,
     CONSTRAINT unique_user_filename UNIQUE (owner_login, filename)
 );
+
+
+GRANT INSERT ON users TO cloud;

@@ -2,6 +2,7 @@ package ru.netology.cloudstorage.service;
 
 import ru.netology.cloudstorage.dto.FileListResponse;
 import ru.netology.cloudstorage.entity.CloudFile;
+import ru.netology.cloudstorage.entity.User;
 import ru.netology.cloudstorage.repository.CloudFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,23 +10,34 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.netology.cloudstorage.repository.UserRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class FileService {
 
-    private CloudFileRepository fileRepository;
+    private final CloudFileRepository fileRepository;
+
+    private final UserRepository userRepository;
 
     @Value("${app.storage-path:./uploads}")
     private String storagePath;
 
+    public FileService(CloudFileRepository fileRepository, UserRepository userRepository) {
+        this.fileRepository = fileRepository;
+        this.userRepository = userRepository;
+    }
+
     public void uploadFile(String login, String filename, MultipartFile file) throws IOException {
+        Optional<User> user = userRepository.findByLogin(login);
+        if(!user.isPresent())  throw new RuntimeException("Пользователь с логином " + login + " не найден");;
+
         Path path = Paths.get(storagePath, login, filename);
         Files.createDirectories(path.getParent());
         Files.write(path, file.getBytes());
@@ -35,7 +47,10 @@ public class FileService {
         cloudFile.setOriginalName(file.getOriginalFilename());
         cloudFile.setSize(file.getSize());
         cloudFile.setContentType(file.getContentType());
-        cloudFile.setOwnerLogin(login);
+
+
+
+        cloudFile.setOwner(user.get());
         fileRepository.save(cloudFile);
     }
 

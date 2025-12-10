@@ -18,14 +18,6 @@ public class CloudFile {
     private String filename;
     private String originalName;
 
-    public String getOwnerLogin() {
-        return ownerLogin;
-    }
-
-    public void setOwnerLogin(String ownerLogin) {
-        this.ownerLogin = ownerLogin;
-    }
-
     private String ownerLogin;
 
     public Long getId() {
