@@ -18,8 +18,6 @@ public class CloudFile {
     private String filename;
     private String originalName;
 
-    private String ownerLogin;
-
     public Long getId() {
         return id;
     }
@@ -66,12 +64,15 @@ public class CloudFile {
 
     public void setOwner(User owner) {
         this.owner = owner;
+
     }
+
+
 
     private long size;
     private String contentType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_login", referencedColumnName = "login", nullable = false)
     private User owner;
 }

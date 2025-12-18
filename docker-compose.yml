@@ -32,8 +32,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./build/docker/sql:/docker-entrypoint-initdb.d
-      - /docker/init-on-start.sh:/docker-entrypoint-initdb.d/init-on-start.sh
+      # Монтируем локальную папку ./docker в папку инициализации контейнера
+      - ./docker:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cloud -d cloud_db"]
       interval: 5s

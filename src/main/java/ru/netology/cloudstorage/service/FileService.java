@@ -1,5 +1,6 @@
 package ru.netology.cloudstorage.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.netology.cloudstorage.dto.FileListResponse;
 import ru.netology.cloudstorage.entity.CloudFile;
 import ru.netology.cloudstorage.entity.User;
@@ -34,9 +35,10 @@ public class FileService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public void uploadFile(String login, String filename, MultipartFile file) throws IOException {
         Optional<User> user = userRepository.findByLogin(login);
-        if(!user.isPresent())  throw new RuntimeException("Пользователь с логином " + login + " не найден");;
+        if(user.isEmpty())  throw new RuntimeException("Пользователь с логином " + login + " не найден");;
 
         Path path = Paths.get(storagePath, login, filename);
         Files.createDirectories(path.getParent());
@@ -49,10 +51,11 @@ public class FileService {
         cloudFile.setContentType(file.getContentType());
 
 
-
-        cloudFile.setOwner(user.get());
+        User currentUser = user.get();
+        cloudFile.setOwner(currentUser);
         fileRepository.save(cloudFile);
     }
+
 
     public Resource downloadFile(String login, String filename) throws IOException {
         Path path = Paths.get(storagePath, login, filename);
@@ -66,6 +69,7 @@ public class FileService {
                 .toList();
     }
 
+    @Transactional
     public void deleteFile(String login, String filename) {
         fileRepository.deleteByOwnerLoginAndFilename(login, filename);
         try {
@@ -73,6 +77,7 @@ public class FileService {
         } catch (IOException ignored) {}
     }
 
+    @Transactional
     public void renameFile(String login, String oldName, String newName) {
         CloudFile file = fileRepository.findByOwnerLoginAndFilename(login, oldName)
                 .orElseThrow(() -> new RuntimeException("File not found"));
