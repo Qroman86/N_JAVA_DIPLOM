@@ -35,6 +35,10 @@ public class FileController {
             @RequestParam("filename") String filename,
             @RequestPart("file") MultipartFile file) throws IOException {
 
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
         String login = authService.getLoginByToken(token);
         fileService.uploadFile(login, filename, file);
         return ResponseEntity.ok().build();
@@ -45,6 +49,10 @@ public class FileController {
             @RequestHeader("auth-token") String token,
             @RequestParam("filename") String filename) {
 
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
         String login = authService.getLoginByToken(token);
         fileService.deleteFile(login, filename);
         return ResponseEntity.ok().build();
@@ -54,6 +62,10 @@ public class FileController {
     public ResponseEntity<Resource> download(
             @RequestHeader("auth-token") String token,
             @RequestParam("filename") String filename) throws IOException {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
 
         String login = authService.getLoginByToken(token);
         Resource resource = fileService.downloadFile(login, filename);
@@ -73,6 +85,10 @@ public class FileController {
             @RequestParam("filename") String oldName,
             @RequestBody Map<String, String> body) {
 
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
         String login = authService.getLoginByToken(token);
         String newName = body.get("filename");
         fileService.renameFile(login, oldName, newName);
@@ -83,6 +99,10 @@ public class FileController {
     public List<FileListResponse> list(
             @RequestHeader("auth-token") String token,
             @RequestParam(defaultValue = "10") int limit) {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
 
         String login = authService.getLoginByToken(token);
         return fileService.getFileList(login, limit);
