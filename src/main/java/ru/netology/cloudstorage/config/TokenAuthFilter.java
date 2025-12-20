@@ -5,7 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.netology.cloudstorage.service.AuthService;
@@ -29,19 +31,23 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
         String token = request.getHeader("auth-token");
 
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
         if (token != null && authService.validateToken(token)) {
             String login = authService.getLoginByToken(token);
-
             if (login != null) {
-                var auth = new UsernamePasswordAuthenticationToken(
-                        login,
-                        null, // пароль не нужен — аутентификация по токену
-                        Collections.emptyList()
-                );
+                var auth = new UsernamePasswordAuthenticationToken(login, null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().equals("/cloud/login");
     }
 }

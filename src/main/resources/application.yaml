@@ -17,3 +17,7 @@ server:
 
 storage:
   path: ./uploads
+
+logging:
+  level:
+    org.springframework.security: TRACE
