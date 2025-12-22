@@ -56,4 +56,30 @@ class TokenAuthFilterTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         verify(filterChain).doFilter(request, response);
     }
+
+    @Test
+    @org.junit.jupiter.api.DisplayName("shouldNotFilter: должен вернуть true для пути /cloud/login")
+    void shouldNotFilter_LoginPath_ReturnsTrue() {
+        // Настраиваем мок запроса на путь логина
+        when(request.getServletPath()).thenReturn("/cloud/login");
+
+        // Вызываем тестируемый метод
+        boolean result = tokenAuthFilter.shouldNotFilter(request);
+
+        // Проверяем, что фильтр вернет true (т.е. "не фильтровать")
+        assertTrue(result);
+    }
+
+    @Test
+    @org.junit.jupiter.api.DisplayName("shouldNotFilter: должен вернуть false для любого другого пути")
+    void shouldNotFilter_OtherPath_ReturnsFalse() {
+        // Настраиваем мок запроса на другой защищенный путь
+        when(request.getServletPath()).thenReturn("/cloud/list");
+
+        // Вызываем тестируемый метод
+        boolean result = tokenAuthFilter.shouldNotFilter(request);
+
+        // Проверяем, что фильтр вернет false (т.е. "нужно фильтровать")
+        assertFalse(result);
+    }
 }

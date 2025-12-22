@@ -19,6 +19,7 @@ class EntityIntegrationTest extends AbstractIntegrationTest {
         // Given
         User user = new User();
         user.setLogin("ivan_ivanov");
+        user.setPassword("password");
         entityManager.persist(user);
 
         CloudFile file = new CloudFile();
@@ -41,8 +42,10 @@ class EntityIntegrationTest extends AbstractIntegrationTest {
     void shouldDeleteFileButKeepUser() {
         // Given
         User user = new User();
-        user.setLogin("user2");
+        user.setLogin("user");
+        user.setPassword("password");
         entityManager.persist(user);
+
         CloudFile file = new CloudFile();
         file.setFilename("delete_me.txt");
         file.setOwner(user);
@@ -54,7 +57,7 @@ class EntityIntegrationTest extends AbstractIntegrationTest {
         entityManager.flush();
 
         // Then
-        User foundUser = entityManager.find(User.class, "user2");
+        User foundUser = entityManager.find(User.class, "user");
         assertThat(foundUser).isNotNull(); // Пользователь остался
         CloudFile foundFile = entityManager.find(CloudFile.class, file.getId());
         assertThat(foundFile).isNull(); // Файл удален

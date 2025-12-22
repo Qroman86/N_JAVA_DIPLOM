@@ -12,9 +12,9 @@ class EntityUnitTest {
     void testUserFields() {
         User user = new User();
         user.setLogin("test_user");
-
+        user.setPassword("password");
         assertEquals("test_user", user.getLogin());
-        assertEquals("secret_hash", user.getPassword());
+        assertEquals("password", user.getPassword());
     }
 
     @Test
