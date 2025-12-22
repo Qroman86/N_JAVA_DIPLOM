@@ -1,47 +1,30 @@
-# Облачное хранилище
+# Cloud Storage Service
 
-REST-сервис для загрузки файлов и вывода списка уже загруженных файлов пользователя.  
-Полностью соответствует спецификации [Cloud API (OpenAPI)](https://github.com/netology-code/jd-homeworks/blob/master/diploma/cloudservice.md)
+REST-сервис для безопасного хранения файлов. Сервис позволяет пользователям загружать, скачивать, переименовывать и удалять файлы через защищенный интерфейс.
 
-## Запуск проекта
+**Документация:** Соответствует спецификации [Cloud API (OpenAPI)](https://github.com/netology-code/jd-homeworks/blob/master/diploma/CloudServiceSpecification.yaml).
+
+---
+
+## 🛠 Технологический стек
+- **Backend:** Java 17, Spring Boot 3.x, Spring Security (Token Auth).
+- **Database:** PostgreSQL.
+- **DevOps:** Docker, Docker Compose.
+- **Testing:** JUnit 5, Mockito, Testcontainers (PostgreSQL).
+- **Build Tool:** Gradle.
+
+---
+
+## 🚀 Запуск приложения
+
+Весь проект (сервис + база данных) разворачивается одной командой:
 
 
 
-```bash
-# Скачивание зависимостей и сборка образа
-docker-compose up --build
+### Тестовые пользователи
 
-# Или в фоне
-docker-compose up -d --build
-Приложение будет доступно по адресу:
-http://localhost:8080/cloud
-База данных PostgreSQL — http://localhost:5432
+Логин	Пароль	    Роль
+user	password	Пользователь
+alice	alice123	Пользователь
+admin	secret	    Администратор
 
-Тестовые пользователи
-
-Логин           Пароль      Роль
-user            password    Пользователь
-alice           alice123    Пользователь
-admin           secret  Администратор
-
-Подключение фронтенда
-
-Скачать фронтенд:
-https://github.com/netology-code/jd-homeworks/tree/master/diploma/netology-diplom-frontend
-В папке фронтенда создать/отредактировать файл .env:envVUE_APP_BASE_URL=http://localhost:8080/cloud
-Запустить:Bashnpm install
-npm run serve
-
-Фронтенд будет доступен по адресу: http://localhost:8081
-
-API (основные эндпоинты)
-BashPOST   /cloud/login     → { "auth-token": "..." }
-POST   /cloud/logout    → (с заголовком auth-token)
-GET    /cloud/list?limit=10
-POST   /cloud/file?filename=...
-GET    /cloud/file?filename=...
-PUT    /cloud/file?filename=...  → { "filename": "new-name.jpg" }
-DELETE /cloud/file?filename=...
-Тесты
-Bash# Unit + интеграционные тесты с Testcontainers
-./gradlew test
